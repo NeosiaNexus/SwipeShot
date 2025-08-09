@@ -1,0 +1,9 @@
+node_modules
+dist
+out
+assets
+*.md
+*.log
+.expo
+.vscode
+build
