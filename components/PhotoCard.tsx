@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 
 import { Image } from 'expo-image';
 import { StyleSheet, Dimensions, View } from 'react-native';
@@ -10,7 +10,7 @@ interface Props {
   overlay?: React.ReactNode;
 }
 
-export default function PhotoCard({ uri, overlay }: Props) {
+export default function PhotoCard({ uri, overlay }: Props): JSX.Element {
   return (
     <View style={styles.card}>
       <Image

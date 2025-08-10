@@ -1,65 +1,93 @@
-import React from 'react';
+import React, { JSX } from 'react';
 
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface Props {
-  onReject(): void;
-  onKeep(): void;
   onUndo(): void;
   onPurge(): void;
   queuedCount: number;
   purging?: boolean;
 }
 
-export default function ActionBar({
-  onReject,
-  onKeep,
-  onUndo,
-  onPurge,
-  queuedCount,
-  purging,
-}: Props) {
+export default function ActionBar({ onUndo, onPurge, queuedCount, purging }: Props): JSX.Element {
   return (
     <View style={styles.actions}>
-      <TouchableOpacity style={[styles.btn, styles.gray]} onPress={onUndo}>
-        <Text>↩️ Undo</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={[styles.btn, styles.dark]} onPress={onReject}>
-        <Text>🗑️</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={[styles.btn, styles.primary]} onPress={onKeep}>
-        <Text>✅</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
+      <Pressable style={[styles.surface, styles.shadow, styles.circleBtn]} onPress={onUndo}>
+        <Ionicons color="#4099ff" name="return-up-back" size={24} />
+      </Pressable>
+
+      <Pressable
+        style={[styles.surface, styles.shadow, styles.circleBtn]}
+        onPress={() => Alert.alert('Fonctionnalité non implémentée')}
+      >
+        <MaterialIcons color="#29ff37" name="favorite" size={24} />
+      </Pressable>
+
+      <Pressable
         disabled={purging || queuedCount === 0}
-        style={[styles.btn, styles.danger, purging && styles.disabled]}
+        style={[styles.surface, styles.shadow, styles.pillBtn, purging && styles.disabled]}
         onPress={onPurge}
       >
-        {purging ? <ActivityIndicator /> : <Text>🔥 Purger {queuedCount}</Text>}
-      </TouchableOpacity>
+        {purging ? (
+          <ActivityIndicator />
+        ) : (
+          <>
+            <MaterialIcons color="#ff1f31" name="delete" size={30} />
+            <Text style={styles.count}>{queuedCount}</Text>
+          </>
+        )}
+      </Pressable>
     </View>
   );
 }
 
+const S = {
+  white: '#fff',
+  black: '#000',
+  gap: 12,
+  radiusCircle: 999,
+  radiusPill: 10,
+  btnSize: 55,
+  padX: 10,
+};
+
 const styles = StyleSheet.create({
   actions: {
-    position: 'absolute',
-    bottom: 24,
     flexDirection: 'row',
-    gap: 12,
+    gap: S.gap,
     paddingHorizontal: 16,
-    backgroundColor: '#0b0b0b',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  btn: {
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: '#222',
+  surface: {
+    backgroundColor: S.white,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  gray: { backgroundColor: '#2a2a2a' },
-  dark: { backgroundColor: '#1e1e1e' },
-  primary: { backgroundColor: '#0ea5e9' },
-  danger: { backgroundColor: '#ef4444' },
+  shadow: {
+    shadowColor: S.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  circleBtn: {
+    width: S.btnSize,
+    height: S.btnSize,
+    borderRadius: S.radiusCircle,
+  },
+  pillBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: S.radiusPill,
+    paddingHorizontal: S.padX,
+    height: S.btnSize,
+    gap: 6,
+  },
+  count: {
+    fontWeight: '600',
+  },
   disabled: { opacity: 0.6 },
 });

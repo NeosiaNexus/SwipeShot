@@ -1,16 +1,17 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { JSX, useCallback, useEffect } from 'react';
 
-import * as Haptics from 'expo-haptics';
-import { Animated, StyleSheet, Text } from 'react-native';
+import { Animated, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import SwipeOverlay from '@/components/SwipeOverlay';
 
 import ActionBar from '../components/ActionBar';
 import PhotoCard from '../components/PhotoCard';
 import { useMediaLibrary } from '../hooks/useMediaLibrary';
 import { useSwipeDeck } from '../hooks/useSwipeDeck';
 
-export default function HomeScreen() {
-  const lib = useMediaLibrary({ pageSize: 200, mediaTypes: ['photo', 'video'] });
+export default function HomeScreen(): JSX.Element {
+  const lib = useMediaLibrary({ pageSize: 200, mediaTypes: ['photo'] });
 
   const {
     current,
@@ -18,26 +19,17 @@ export default function HomeScreen() {
     currentCardStyle,
     nextCardScale,
     panResponder,
-    forceSwipe,
     resetPosition,
     index,
     setIndex,
+    labelLeftOpacity,
+    labelRightOpacity,
   } = useSwipeDeck(lib.assets, {
     resetKey: lib.refreshSeq,
     onSwipe: (direction, item) => {
       if (direction === 'left') lib.queue.enqueue(item.id);
     },
   });
-
-  const onKeep = useCallback(() => {
-    Haptics.selectionAsync();
-    forceSwipe('right');
-  }, [forceSwipe]);
-
-  const onReject = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    forceSwipe('left');
-  }, [forceSwipe]);
 
   const onUndo = useCallback(() => {
     const last = lib.queue.dequeueLast();
@@ -51,7 +43,7 @@ export default function HomeScreen() {
     if (lib.page.hasNextPage && index > lib.assets.length - 40) {
       lib.loadMore();
     }
-  }, [index, lib.page.hasNextPage, lib.assets.length, lib.loadMore]);
+  }, [index, lib]);
 
   if (lib.permission.status !== 'granted') {
     return (
@@ -72,16 +64,14 @@ export default function HomeScreen() {
   if (!current) {
     return (
       <SafeAreaView style={styles.center}>
-        <Text style={{ marginBottom: 8 }}>Plus rien à trier 🎉</Text>
+        <Text>Plus rien à trier 🎉</Text>
         <Text>
           {lib.queue.count ? `${lib.queue.count} en attente de suppression` : 'Pellicule clean !'}
         </Text>
         <ActionBar
           purging={lib.status === 'purging'}
           queuedCount={lib.queue.count}
-          onKeep={() => {}}
           onPurge={lib.purge}
-          onReject={() => {}}
           onUndo={onUndo}
         />
       </SafeAreaView>
@@ -90,27 +80,33 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Animated.View
-        {...panResponder.panHandlers}
-        key={current.id}
-        style={[styles.currentWrapper, currentCardStyle]}
-      >
-        <PhotoCard uri={current.uri} />
-      </Animated.View>
-      {next && (
+      <StatusBar barStyle="light-content" />
+      <View>
         <Animated.View
-          pointerEvents="none"
-          style={[styles.nextWrapper, { transform: [{ scale: nextCardScale }] }]}
+          {...panResponder.panHandlers}
+          key={current.id}
+          style={[styles.currentWrapper, currentCardStyle]}
         >
-          <PhotoCard key={next.id} uri={next.uri} />
+          <PhotoCard
+            overlay={
+              <SwipeOverlay leftOpacity={labelLeftOpacity} rightOpacity={labelRightOpacity} />
+            }
+            uri={current.uri}
+          />
         </Animated.View>
-      )}
+        {next && (
+          <Animated.View
+            pointerEvents="none"
+            style={[styles.nextWrapper, { transform: [{ scale: nextCardScale }] }]}
+          >
+            <PhotoCard key={next.id} uri={next.uri} />
+          </Animated.View>
+        )}
+      </View>
       <ActionBar
         purging={lib.status === 'purging'}
         queuedCount={lib.queue.count}
-        onKeep={onKeep}
         onPurge={lib.purge}
-        onReject={onReject}
         onUndo={onUndo}
       />
     </SafeAreaView>
@@ -118,9 +114,8 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  nextWrapper: { position: 'absolute', left: 16, right: 16, top: 64, zIndex: 1 },
-  currentWrapper: { position: 'absolute', left: 16, right: 16, top: 64, zIndex: 2 },
+  container: { flex: 1, padding: 16, flexDirection: 'column', justifyContent: 'space-between' },
+  nextWrapper: { zIndex: 1, top: 0 },
+  currentWrapper: { zIndex: 2, top: 10 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });

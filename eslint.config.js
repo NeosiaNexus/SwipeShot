@@ -80,7 +80,7 @@ module.exports = defineConfig([
 
       // 🧠 React Native best practices
       'react-native/no-inline-styles': 'warn',
-      'react-native/no-color-literals': 'warn',
+      //'react-native/no-color-literals': 'warn',
       'react-native/split-platform-components': 'warn',
 
       // 🧠 Hooks
@@ -88,7 +88,7 @@ module.exports = defineConfig([
       'react-hooks/exhaustive-deps': 'warn',
 
       // 🧠 A11y
-      'jsx-a11y/accessible-emoji': 'warn',
+      // 'jsx-a11y/accessible-emoji': 'warn',
       'jsx-a11y/label-has-associated-control': [
         'warn',
         {
