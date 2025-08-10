@@ -80,7 +80,7 @@ export default function HomeScreen(): JSX.Element {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="dark-content" />
       <View>
         <Animated.View
           {...panResponder.panHandlers}
