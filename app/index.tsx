@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 
 import * as Haptics from 'expo-haptics';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import ActionBar from '../components/ActionBar';
@@ -55,23 +55,23 @@ export default function HomeScreen() {
 
   if (lib.permission.status !== 'granted') {
     return (
-      <View style={styles.center}>
+      <SafeAreaView style={styles.center}>
         <Text>Autorise l’accès aux photos pour commencer.</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (lib.status === 'loadingInitial') {
     return (
-      <View style={styles.center}>
+      <SafeAreaView style={styles.center}>
         <Text>Chargement de la pellicule…</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (!current) {
     return (
-      <View style={styles.center}>
+      <SafeAreaView style={styles.center}>
         <Text style={{ marginBottom: 8 }}>Plus rien à trier 🎉</Text>
         <Text>
           {lib.queue.count ? `${lib.queue.count} en attente de suppression` : 'Pellicule clean !'}
@@ -84,7 +84,7 @@ export default function HomeScreen() {
           onReject={() => {}}
           onUndo={onUndo}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -118,7 +118,7 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0b0b0b', padding: 16 },
+  container: { flex: 1, padding: 16 },
   header: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
   nextWrapper: { position: 'absolute', left: 16, right: 16, top: 64, zIndex: 1 },
   currentWrapper: { position: 'absolute', left: 16, right: 16, top: 64, zIndex: 2 },

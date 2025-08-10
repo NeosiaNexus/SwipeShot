@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface Props {
   onReject(): void;
@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     paddingHorizontal: 16,
+    backgroundColor: '#0b0b0b',
   },
   btn: {
     paddingHorizontal: 18,
